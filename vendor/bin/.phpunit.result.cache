@@ -1,0 +1,1 @@
+{"version":1,"defects":{"WaitingListTest::testAddPlayer":4,"WaitingListTest::testRemovePlayer":4},"times":{"WaitingListTest::testAddPlayer":0.044,"WaitingListTest::testRemovePlayer":0.008}}
