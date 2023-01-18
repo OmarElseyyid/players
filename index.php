@@ -5,6 +5,35 @@ require_once 'src/db.php';
 require_once 'src/WaitingList.php';
 
 $waitingList = new WaitingList($pdo);
+$message = '';
+$type = '';
+// add user post request
+if (isset($_POST['add_name'])) {
+    try {
+
+        $res = $waitingList->addPlayer($_POST['add_name']);
+        $message = $res[0];
+        $type = $res[1];
+
+    } catch (Exception $e) {
+        $message = $e->getMessage();
+        $type = 'error';
+    }
+}
+// remove user post request
+if (isset($_POST['remove_id'])) {
+    try {
+
+        $res = $waitingList->removePlayer($_POST['remove_id']);
+        $message = $res[0];
+        $type = $res[1];
+
+    } catch (Exception $e) {
+        $message = $e->getMessage();
+        $type = 'error';
+    }
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -23,14 +52,9 @@ $waitingList = new WaitingList($pdo);
     </script>
 </head>
 <body>
-    <!-- alertify Connected to the database successfully! if connected is true -->
-    <?php if ($connected) : ?>
+    <?php if ($message) :?>
         <script>
-            alertify.notify('Connected to the database successfully!', 'success', 5);            
-        </script>
-    <?php else: ?>
-        <script>
-            alertify.notify('Could not connect to the database!', 'error', 5);
+            alertify.notify('<?php echo $message; ?>', '<?php echo $type; ?>', 5);            
         </script>
     <?php endif; ?>
 
@@ -39,15 +63,16 @@ $waitingList = new WaitingList($pdo);
         <form action="index.php" method="post">
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                <input type="text" class="form-control" id="name" name="add_name" placeholder="Enter name" required>
             </div>
             <button type="submit" class="btn btn-primary">Add</button>
         </form>
-        <table class="table mt-5">
+        <table class="table mt-5 text-center">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Group</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,6 +80,12 @@ $waitingList = new WaitingList($pdo);
                     <tr>
                         <td><?php echo $player['name']; ?></td>
                         <td><?php echo $player['group_number']; ?></td>
+                        <td>
+                            <form action="index.php" method="post">
+                                <input type="hidden" name="remove_id" value="<?php echo $player['id']; ?>">
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
